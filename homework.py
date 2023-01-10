@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Optional
+
 
 @dataclass
 class InfoMessage:
@@ -90,7 +90,7 @@ class SportsWalking(Training):
                  action: int,
                  duration: float,
                  weight: float,
-                 height: float     # int рост обычно измеряется в целых числах 
+                 height: float     # int рост обычно измеряется в целых числах
                  ) -> None:
         super().__init__(action, duration, weight)
         self.height_m = height / self.CM_IN_M
@@ -120,7 +120,8 @@ class Swimming(Training):
                  action: int,
                  duration: float,
                  weight: float,
-                 length_pool: float,  # int длинна бассейна тоже обычно в целых числах 25 м, 50 м   
+                 # int длинна бассейна тоже обычно в целых числах 25 м, 50 м
+                 length_pool: float,
                  count_pool: int
                  ) -> None:
         super().__init__(action, duration, weight)
