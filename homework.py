@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Type, Dict, List
+from typing import Type, Dict, List, Union, Tuple
 
 
 @dataclass
@@ -20,6 +20,7 @@ class InfoMessage:
     calories: float
 
     def get_message(self) -> str:
+        """Вывод сообщения о тренировке."""
         return self.MESSAGE_TEMPLATE.format(**asdict(self))
 
 
@@ -31,13 +32,13 @@ class Training:
     MIN_IN_H = 60.0
 
     def __init__(self,
-                 action: int,
-                 duration: float,
-                 weight: float,
+                 action: Union[int, float],
+                 duration: Union[int, float],
+                 weight: Union[int, float],
                  ) -> None:
-        self.action: int = action
-        self.duration: float = duration
-        self.weight: float = weight
+        self.action = action
+        self.duration = duration
+        self.weight = weight
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -94,13 +95,13 @@ class SportsWalking(Training):
                  height: float     # int рост обычно измеряется в целых числах
                  ) -> None:
         super().__init__(action, duration, weight)
-        self.height_m = height / self.CM_IN_M
+        self.height = height
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         speed_multiplier: float = ((self.get_mean_speed()
                                    * self.KMH_IN_MSEC)**2
-                                   / self.height_m)
+                                   / (self.height / self.CM_IN_M))
         return (
             (self.CALORIES_WEIGHT_MULTIPLIER * self.weight
              + speed_multiplier
@@ -146,30 +147,31 @@ class Swimming(Training):
         )
 
 
-def read_package(workout_type: str, data: List[int]) -> Training:
+def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
     """Прочитать данные полученные от датчиков."""
     TYPE_TRAINING: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    try:
-        return TYPE_TRAINING[workout_type](*data)
-    except KeyError:
-        quit('Не предусмотренный тип тренировки')
+
+    if workout_type not in TYPE_TRAINING:
+        raise ValueError('Не допустимый тип тренировки: ' + workout_type)
+
+    return TYPE_TRAINING[workout_type](*data)
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-    info: InfoMessage = training.show_training_info()
-    print(info.get_message())
+    print(training.show_training_info().get_message())
 
 
 if __name__ == '__main__':
-    packages = [
+    packages: List[Tuple[str, List[Union[int, float]]]] = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
+        ('W', [9000, 1, 75, 180]),
     ]
 
     for workout_type, data in packages:
