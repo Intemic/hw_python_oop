@@ -32,9 +32,9 @@ class Training:
     MIN_IN_H = 60.0
 
     def __init__(self,
-                 action: Union[int, float],
-                 duration: Union[int, float],
-                 weight: Union[int, float],
+                 action: int,
+                 duration: float,
+                 weight: float,
                  ) -> None:
         self.action = action
         self.duration = duration
@@ -147,7 +147,7 @@ class Swimming(Training):
         )
 
 
-def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
+def read_package(workout_type: str, data: List[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
     TYPE_TRAINING: Dict[str, Type[Training]] = {
         'SWM': Swimming,
@@ -158,7 +158,7 @@ def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
     if workout_type not in TYPE_TRAINING:
         raise ValueError('Не допустимый тип тренировки: ' + workout_type)
 
-    return TYPE_TRAINING[workout_type](*data)
+    return TYPE_TRAINING[workout_type](int(data[0]), *data[1:])
 
 
 def main(training: Training) -> None:
@@ -167,7 +167,7 @@ def main(training: Training) -> None:
 
 
 if __name__ == '__main__':
-    packages: List[Tuple[str, List[Union[int, float]]]] = [
+    packages: List[Tuple[str, List[float]]] = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
