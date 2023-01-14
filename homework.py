@@ -158,7 +158,7 @@ def read_package(workout_type: str, data: List[float]) -> Training:
     if workout_type not in TYPE_TRAINING:
         raise ValueError('Не допустимый тип тренировки: ' + workout_type)
 
-    return TYPE_TRAINING[workout_type](*data)
+    return TYPE_TRAINING[workout_type](*data) # type: ignore 
 
 
 def main(training: Training) -> None:
